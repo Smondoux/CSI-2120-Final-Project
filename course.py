@@ -4,7 +4,7 @@ class Course:
         self.courseid = courseid
         self.days = days if days is not None else []
         self.times = times if times is not None else []
-    
+        self.isSelected = False
 
     # Getters
     def getName(self):
@@ -18,10 +18,9 @@ class Course:
 
     def getTimes(self):
         return self.times
+    def getSelected(self):
+        return self.isSelected
 
-    def getSelectState(self):
-        return self.selected
-    
     # Setters
     def setName(self, name):
         self.name = name
@@ -39,5 +38,15 @@ class Course:
             raise TypeError("times must be a list")
         self.times = times
 
-    
 
+    def changeSelected(self):
+        if self.isSelected == True:
+            self.isSelected = False
+        else:
+            self.isSelected = True
+
+c = Course("Calculus I", "MATH101", ["Mon", "Wed"], ["9:00", "10:15"])
+
+print(c.getSelected())  # False
+c.changeSelected()
+print(c.getSelected())
