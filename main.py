@@ -1,6 +1,7 @@
 import tkinter as tk #import gui toolkit
 import tkinter.ttk as ttk #additional gui elements
 from tkinter import * #needed for frames(?) not entirely sure why its not included
+import course
 from course import Course # getting the Course object class
 
 window = tk.Tk() #create a new window
@@ -43,6 +44,9 @@ bottomHorizontalFrame.grid_propagate(False)
 bottomHorizontalFrame.pack_propagate(False)
 
 
+
+row_to_day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thur", 4: "Fri", 5: "Sat"}
+
 # add time labels at the top
 for col in range(13):
     label = tk.Label(innerMainFrame, text=f"{8+col}:00", borderwidth=1, relief="solid", width=9)
@@ -51,7 +55,7 @@ for col in range(13):
 timeCells = {} #array to hold positions of cells on the time table, use this to display what time blocks a class occupies
 
 # storing container section where classes will be displayed
-for row in range(6):  # class 1 to 6
+for row in range(6):  # class days
     for col in range(13):  # 8am to 8pm
         cell = tk.Label(innerMainFrame, text="", borderwidth=1, relief="solid", width=9, height=4)
         cell.grid(row=row+1, column=col+1)
@@ -62,21 +66,21 @@ for row in range(6):  # class 1 to 6
 topLCorner = tk.Label(innerMainFrame, borderwidth=1, relief="solid", width=9)
 topLCorner.grid(row=0,column=0,sticky="nsew")
 for row in range(6):
-    label = tk.Label(innerMainFrame, text="DAY", borderwidth=1, relief="solid", width=9, height=4)
+    label = tk.Label(innerMainFrame, text=row_to_day[row], borderwidth=1, relief="solid", width=9, height=4)
     label.grid(row=row+1, column=0, sticky="nsew")
 
 
-#change the background color of the label to highlight it
-timeCells[(3,5)].configure(bg = "yellow")
-timeCells[(3,6)].configure(bg = "yellow")
+# #change the background color of the label to highlight it
+# timeCells[(3,5)].configure(bg = "yellow")
+# timeCells[(3,6)].configure(bg = "yellow")
 
 
 #Sample Classes
 courses = [
-    Course("English", "ENG101", days= ["Mon", "Wed"], times=["9:00", "14:00"]),
-    Course("Math", "MTH101", days= ["Mon", "Thur"], times=["10:00", "17:00"]),
-    Course("Programming", "CSI101", days= ["Wed", "Fri"], times=["11:00", "14:00"]),
-    Course("Science", "SCI101", days= ["Tue", "Thur"], times=["13:00", "18:00"])
+    Course("English", "ENG101", days= ["Mon", "Wed"], times=["9:00"]),
+    Course("Math", "MTH101", days= ["Mon", "Thur"], times=["10:00"]),
+    Course("Programming", "CSI101", days= ["Wed", "Fri"], times=["11:00"]),
+    Course("Science", "SCI101", days= ["Tue", "Thur"], times=["10:00"])
 ]
 
 #Display Classes
@@ -90,7 +94,7 @@ def display_courses(frame, course_list):
         label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}") #prints data of object
         label = tk.Label(frame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
         label.grid(row=i, column=0, sticky="ew", padx=5, pady=5)
-        label.bind("<Button-1>", lambda e, c=course: select_Course(c))
+        label.bind("<Button-1>", lambda e, c=course: select_Course(c, course_list))
 
     # Make column stretch if frame resizes
     frame.columnconfigure(0, weight=1)
@@ -99,15 +103,49 @@ display_courses(rightVerticalFrame, courses)
 
 
 #On select- Labels for Classes
-def select_Course(course):
-    print("SELECT WORKS")
+def select_Course(course, course_list):
+    course.changeSelected()
+    changeColor(course, course_list)
     # Clear previous selection in bottom frame
     for widget in bottomHorizontalFrame.winfo_children():
         widget.destroy()
     # Create a label for the selected course
-    label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}")
-    label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
-    label.pack(side="left", padx=5, pady=5, fill="x", expand=True)
-    
+    for i, course in enumerate(course_list):
+        if(course.getSelected()):
+            label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}") #prints data of object
+            label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
+            label.grid(row=i, column=0, sticky="ew", padx=5, pady=5)
+            label.bind("<Button-1>", lambda e, c=course: select_Course(c, course_list))
+
+
+    # label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}")
+    # label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
+    # label.pack(side="left", padx=5, pady=5, fill="x", expand=True)
+        
+
+#mapping values for rows and col to make coloring tiles easier
+day_to_row = {"Mon": 0, "Tue": 1, "Wed": 2, "Thur": 3, "Fri": 4, "Sat": 5}
+time_to_col = {
+    "8:00": 1, "9:00": 2, "10:00": 3, "11:00": 4, "12:00": 5,
+    "13:00": 6, "14:00": 7, "15:00": 8, "16:00": 9, "17:00": 10,
+    "18:00": 11, "19:00": 12, "20:00": 13
+}
+
+#On Select color in tiles on schedule
+def changeColor(course, course_list):
+       #Clear previous selections for colored tiles (going to iterate over all of them and recolor still selected ones)
+        for row in range(6):  # class days
+            for col in range(13):  # 8am to 8pm
+                timeCells[(row,col)].configure(bg="white")
+        for i, course in enumerate(course_list):
+            if(course.getSelected()):
+                for day in course.getDays():
+                    for time in course.getTimes():
+                        row = day_to_row[day]
+                        col = time_to_col[time]
+                        timeCells[(row, col)].configure(bg="yellow")
+   
+       
+
 
 window.mainloop() #activates gui event loop
