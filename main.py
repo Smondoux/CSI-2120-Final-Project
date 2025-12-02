@@ -133,27 +133,27 @@ time_to_col = {
 
 #On Select color in tiles on schedule
 def changeColor(course, course_list):
+        #Resets conflict
+        foundConflict = False
        #Clear previous selections for colored tiles (going to iterate over all of them and recolor still selected ones)
         for row in range(6):  # class days
             for col in range(13):  # 8am to 8pm
                 timeCells[(row,col)].configure(bg="white")
-
-        used_slots = {}
-        # Checks for time conflicts
+        
+        #Loops through course list, marks occupied times as yellow, red if already occupied
         for c in course_list:
             if c.getSelected():
                 for day in c.getDays():
                     for time in c.getTimes():
                         row = day_to_row[day]
                         col = time_to_col[time]
-                        used_slots[(row, col)] = used_slots.get((row, col), 0) + 1
 
-    # Colors days/times
-        for (row, col), count in used_slots.items():
-            if count > 1:
-                timeCells[(row, col)].configure(bg="red")   # Time Conflict
-            else:
-                timeCells[(row, col)].configure(bg="yellow")  # No Conflict
+                        currentColor = timeCells[(row, col)].cget("bg")
+                    if currentColor == "yellow":
+                        timeCells[(row, col)].configure(bg="red") 
+                        foundConflict = True #marks a conflict boolean
+                    else:
+                        timeCells[(row, col)].configure(bg="yellow")
    
        
 
