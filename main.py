@@ -38,7 +38,7 @@ rightVerticalFrame.grid(row=0,column=1,rowspan=2, sticky="ns")
 rightVerticalFrame.grid_propagate(False)
 
 #bottomHorizontalFrame is the bottom row, used for displaying selected classes
-bottomHorizontalFrame= Frame(outerFrame, bg="#B0C4DE", width=1000, height=300)
+bottomHorizontalFrame= Frame(outerFrame, bg="#D8CFC4", width=1000, height=300)
 bottomHorizontalFrame.grid(row=1, column=0, sticky="ew")
 bottomHorizontalFrame.columnconfigure(0, weight=0)
 bottomHorizontalFrame.columnconfigure(1, weight= 1)
@@ -46,7 +46,7 @@ bottomHorizontalFrame.grid_propagate(False)
 bottomHorizontalFrame.pack_propagate(False)
 
 #bottomLeftFrame is the bottom row, used for displaying selected classes
-bottomLeftFrame= Frame(bottomHorizontalFrame, bg="#B0C4DE", width=500, height=300, borderwidth=1, relief="solid")
+bottomLeftFrame= Frame(bottomHorizontalFrame, bg="#D8CFC4", width=500, height=300, borderwidth=1, relief="solid")
 bottomLeftFrame.grid(row=0, column=0, sticky="e")
 bottomLeftFrame.columnconfigure(0, weight= 1)
 bottomLeftFrame.columnconfigure(1, weight= 1)
@@ -54,23 +54,23 @@ bottomLeftFrame.grid_propagate(False)
 bottomLeftFrame.pack_propagate(False)
 
 #bottomMiddleFrame, stealing the middle section of it to show schedule requriements which will be showing the logic gate requiremnts
-bottomMiddleFrame = Frame(bottomHorizontalFrame, bg = "#B0C4DE", width=500, height=300, borderwidth=1, relief="solid")
+bottomMiddleFrame = Frame(bottomHorizontalFrame, bg = "#D8CFC4", width=500, height=300, borderwidth=1, relief="solid")
 bottomMiddleFrame.grid(row=0, column=1, sticky="w")
 bottomMiddleFrame.grid_propagate(False)
 bottomMiddleFrame.pack_propagate(False)
-blfTitleLabel = tk.Label(bottomMiddleFrame, text="Course Load Requirements", bg="#B0C4DE", font=("Segoe UI", 12, "bold"), borderwidth=1, relief="solid")
+blfTitleLabel = tk.Label(bottomMiddleFrame, text="Course Load Requirements", bg="#D8CFC4", font=("Segoe UI", 12, "bold"), borderwidth=1, relief="solid")
 blfTitleLabel.bind("<Button-1>", lambda e: infoWindow())
 blfTitleLabel.place(x = 250, y =15, anchor=tk.CENTER)
-blfR1Label = tk.Label(bottomMiddleFrame, text="Schedule must have both a Math AND an English class", bg="#B0C4DE")
+blfR1Label = tk.Label(bottomMiddleFrame, text="Schedule must have both a Math AND an English class", bg="#D8CFC4")
 blfR1Label.place(x = 250, y =45, anchor=tk.CENTER)
-blfR2Label = tk.Label(bottomMiddleFrame, text="Schedule must have either a Programming OR a Science class", bg="#B0C4DE")
+blfR2Label = tk.Label(bottomMiddleFrame, text="Schedule must have either a Programming OR a Science class", bg="#D8CFC4")
 blfR2Label.place(x = 250, y =75, anchor=tk.CENTER)
 blfR3Label = tk.Label(bottomMiddleFrame, text="If a student is enrolled in either the Tue/Fri or the Tue/Wed Art classes," \
-" \n they may not enroll in the other (XOR)", bg="#B0C4DE")
+" \n they may not enroll in the other (XOR)", bg="#D8CFC4")
 blfR3Label.place(x = 250, y =105, anchor=tk.CENTER)
-blfR4Label = tk.Label(bottomMiddleFrame, text="Schedule must not have a Tuesday or a Thursday class (NOR)", bg="#B0C4DE")
+blfR4Label = tk.Label(bottomMiddleFrame, text="Schedule must not have a Tuesday or a Thursday class (NOR)", bg="#D8CFC4")
 blfR4Label.place(x = 250, y =135, anchor=tk.CENTER)
-blfR5Label = tk.Label(bottomMiddleFrame, text="Schedule must not have any conflicts", bg="#B0C4DE")
+blfR5Label = tk.Label(bottomMiddleFrame, text="Schedule must not have any conflicts", bg="#D8CFC4")
 blfR5Label.place(x = 250, y =165, anchor=tk.CENTER)
 
 
@@ -161,19 +161,19 @@ def select_Course(course, course_list):
     if not AND(course_list, 0, 1): #check if math AND english are both selected passing their array index number
         blfR1Label.config(bg = "red", borderwidth=1, relief="solid")
     else:
-        blfR1Label.config(bg="#B0C4DE", borderwidth=0)
+        blfR1Label.config(bg="#D8CFC4", borderwidth=0)
     if not OR(course_list, 2, 3): #check if theyre in either one of science or programming
         blfR2Label.config(bg = "red", borderwidth=1, relief="solid")
     else:
-        blfR2Label.config(bg="#B0C4DE", borderwidth=0)
+        blfR2Label.config(bg="#D8CFC4", borderwidth=0)
     if not XOR(course_list, 4, 6): #check if they are in only one of the art sections
         blfR3Label.config(bg = "red", borderwidth=1, relief="solid")
     else:
-        blfR3Label.config(bg="#B0C4DE", borderwidth=0)
+        blfR3Label.config(bg="#D8CFC4", borderwidth=0)
     if not NOR(course_list): #check if theyre in none of teh wednesday or thursday classes
         blfR4Label.config(bg = "red", borderwidth=1, relief="solid")
     else:
-        blfR4Label.config(bg="#B0C4DE", borderwidth=0)
+        blfR4Label.config(bg="#D8CFC4", borderwidth=0)
   
     # label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}")
     # label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
@@ -212,7 +212,7 @@ def changeColor(course, course_list):
                             blfR5Label.config(bg = "red")
                         else:
                             timeCells[(row, col)].configure(bg="yellow")
-                            blfR5Label.config(bg = "#B0C4DE")
+                            blfR5Label.config(bg = "#D8CFC4")
 
 
 #boolean gate functions
