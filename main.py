@@ -137,13 +137,23 @@ def changeColor(course, course_list):
         for row in range(6):  # class days
             for col in range(13):  # 8am to 8pm
                 timeCells[(row,col)].configure(bg="white")
-        for i, course in enumerate(course_list):
-            if(course.getSelected()):
-                for day in course.getDays():
-                    for time in course.getTimes():
+
+        used_slots = {}
+        # Checks for time conflicts
+        for c in course_list:
+            if c.getSelected():
+                for day in c.getDays():
+                    for time in c.getTimes():
                         row = day_to_row[day]
                         col = time_to_col[time]
-                        timeCells[(row, col)].configure(bg="yellow")
+                        used_slots[(row, col)] = used_slots.get((row, col), 0) + 1
+
+    # Colors days/times
+        for (row, col), count in used_slots.items():
+            if count > 1:
+                timeCells[(row, col)].configure(bg="red")   # Time Conflict
+            else:
+                timeCells[(row, col)].configure(bg="yellow")  # No Conflict
    
        
 
