@@ -232,3 +232,25 @@ def NOR(course_list):
                     return False
     return True
 window.mainloop() #activates gui event loop
+
+def andOrTable():
+    table = (
+        " p    q     r     s     (p ^ q)    (r v s)     (p ^ q) ^ (r v s)\n"
+        "----------------------------------------------------------------\n"
+        " T |  T  |  T  |  T  |     T     |    T    |           T        \n"
+        " T |  F  |  T  |  F  |     F     |    F    |           F        \n"
+        " F |  T  |  F  |  T  |     F     |    T    |           F        \n"
+        " F |  F  |  F  |  F  |     F     |    F    |           F        \n"
+    )
+    return(table)
+
+def xorTable():
+    table = (
+        " t    u   t XOR u\n"
+        "----------------\n"
+        " T |  T  |  F\n"
+        " T |  F  |  T\n"
+        " F |  T  |  T\n"
+        " F |  F  |  F\n"
+    )
+    return(table)
