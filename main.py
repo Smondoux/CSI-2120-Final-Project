@@ -40,10 +40,35 @@ rightVerticalFrame.grid_propagate(False)
 #bottomHorizontalFrame is the bottom row, used for displaying selected classes
 bottomHorizontalFrame= Frame(outerFrame, bg="blue", width=1000, height=300)
 bottomHorizontalFrame.grid(row=1, column=0, sticky="ew")
+bottomHorizontalFrame.columnconfigure(0, weight=0)
+bottomHorizontalFrame.columnconfigure(1, weight= 1)
 bottomHorizontalFrame.grid_propagate(False)
 bottomHorizontalFrame.pack_propagate(False)
 
+#bottomLeftFrame is the bottom row, used for displaying selected classes
+bottomLeftFrame= Frame(bottomHorizontalFrame, bg="light blue", width=500, height=300)
+bottomLeftFrame.grid(row=0, column=0, sticky="e")
+bottomLeftFrame.columnconfigure(0, weight= 1)
+bottomLeftFrame.columnconfigure(1, weight= 1)
+bottomLeftFrame.grid_propagate(False)
+bottomLeftFrame.pack_propagate(False)
 
+#bottomMiddleFrame, stealing the middle section of it to show schedule requriements which will be showing the logic gate requiremnts
+bottomMiddleFrame = Frame(bottomHorizontalFrame, bg = "green", width=500, height=300)
+bottomMiddleFrame.grid(row=0, column=1, sticky="w")
+bottomMiddleFrame.grid_propagate(False)
+bottomMiddleFrame.pack_propagate(False)
+blfTitleLabel = tk.Label(bottomMiddleFrame, text="Course Load Requirements", bg="green", font=("Segoe UI", 12, "bold"))
+blfTitleLabel.place(x = 250, y =15, anchor=tk.CENTER)
+blfR1Label = tk.Label(bottomMiddleFrame, text="Schedule must have both a Math AND an English class", bg="green")
+blfR1Label.place(x = 250, y =45, anchor=tk.CENTER)
+blfR2Label = tk.Label(bottomMiddleFrame, text="Schedule must have either a Programming OR a Science class", bg="green")
+blfR2Label.place(x = 250, y =75, anchor=tk.CENTER)
+blfR3Label = tk.Label(bottomMiddleFrame, text="If a student is enrolled in either the Tue/Fri or the Tue/Wed Art classes," \
+" \n they may not enroll in the other (XOR)", bg="green")
+blfR3Label.place(x = 250, y =105, anchor=tk.CENTER)
+blfR4Label = tk.Label(bottomMiddleFrame, text="Schedule must not have a Wednesday or a Thursday class (NOR)", bg="green")
+blfR4Label.place(x = 250, y =135, anchor=tk.CENTER)
 
 row_to_day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thur", 4: "Fri", 5: "Sat"}
 
@@ -80,7 +105,11 @@ courses = [
     Course("English", "ENG101", days= ["Mon", "Wed"], times=["9:00"]),
     Course("Math", "MTH101", days= ["Mon", "Thur"], times=["10:00"]),
     Course("Programming", "CSI101", days= ["Wed", "Fri"], times=["11:00"]),
-    Course("Science", "SCI101", days= ["Tue", "Thur"], times=["10:00"])
+    Course("Science", "SCI101", days= ["Tue", "Thur"], times=["10:00"]),
+    Course("Art", "ART101", days= ["Tue", "Fri"], times=["16:00"]),
+    Course("Gym", "PHY101", days= ["Mon", "Fri"], times=["11:00"]),
+    Course("Art", "ART101", days= ["Tue", "Wed"], times=["11:00"]),
+    Course("History", "HIS101", days= ["Mon", "Tue"], times=["16:00"])
 ]
 
 #Display Classes
@@ -102,20 +131,28 @@ def display_courses(frame, course_list):
 display_courses(rightVerticalFrame, courses)
 
 
+
 #On select- Labels for Classes
 def select_Course(course, course_list):
     course.changeSelected()
     changeColor(course, course_list)
     # Clear previous selection in bottom frame
-    for widget in bottomHorizontalFrame.winfo_children():
+    for widget in bottomLeftFrame.winfo_children():
         widget.destroy()
     # Create a label for the selected course
+    col = 0
+    r = 0
     for i, course in enumerate(course_list):
         if(course.getSelected()):
             label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}") #prints data of object
-            label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
-            label.grid(row=i, column=0, sticky="ew", padx=5, pady=5)
+            label = tk.Label(bottomLeftFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
+            label.grid(row=r, column=col, sticky="ew", padx=5, pady=5)
             label.bind("<Button-1>", lambda e, c=course: select_Course(c, course_list))
+            r = r + 1
+            if(r > 3): #starts a new column if it gets past four classes scheduled
+                r = 0
+                col = col + 1
+                print("triggered")
 
 
     # label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}")
@@ -133,19 +170,30 @@ time_to_col = {
 
 #On Select color in tiles on schedule
 def changeColor(course, course_list):
+        #Resets conflict
+        foundConflict = False
        #Clear previous selections for colored tiles (going to iterate over all of them and recolor still selected ones)
         for row in range(6):  # class days
             for col in range(13):  # 8am to 8pm
                 timeCells[(row,col)].configure(bg="white")
-        for i, course in enumerate(course_list):
-            if(course.getSelected()):
-                for day in course.getDays():
-                    for time in course.getTimes():
+        
+        #Loops through course list, marks occupied times as yellow, red if already occupied
+        for c in course_list:
+            if c.getSelected():
+                for day in c.getDays():
+                    for time in c.getTimes():
                         row = day_to_row[day]
                         col = time_to_col[time]
+
+                        currentColor = timeCells[(row, col)].cget("bg")
+                    if currentColor == "yellow":
+                        timeCells[(row, col)].configure(bg="red") 
+                        foundConflict = True #marks a conflict boolean
+                    else:
                         timeCells[(row, col)].configure(bg="yellow")
-   
-       
+
+
+
 
 
 window.mainloop() #activates gui event loop
