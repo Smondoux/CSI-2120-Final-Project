@@ -67,8 +67,11 @@ blfR2Label.place(x = 250, y =75, anchor=tk.CENTER)
 blfR3Label = tk.Label(bottomMiddleFrame, text="If a student is enrolled in either the Tue/Fri or the Tue/Wed Art classes," \
 " \n they may not enroll in the other (XOR)", bg="green")
 blfR3Label.place(x = 250, y =105, anchor=tk.CENTER)
-blfR4Label = tk.Label(bottomMiddleFrame, text="Schedule must not have a Wednesday or a Thursday class (NOR)", bg="green")
+blfR4Label = tk.Label(bottomMiddleFrame, text="Schedule must not have a Tuesday or a Thursday class (NOR)", bg="green")
 blfR4Label.place(x = 250, y =135, anchor=tk.CENTER)
+blfR5Label = tk.Label(bottomMiddleFrame, text="Schedule must not have any conflicts", bg="green")
+blfR5Label.place(x = 250, y =165, anchor=tk.CENTER)
+
 
 row_to_day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thur", 4: "Fri", 5: "Sat"}
 
@@ -103,10 +106,10 @@ for row in range(6):
 #Sample Classes
 courses = [
     Course("English", "ENG101", days= ["Mon", "Wed"], times=["9:00"]),
-    Course("Math", "MTH101", days= ["Mon", "Thur"], times=["10:00"]),
+    Course("Math", "MTH101", days= ["Mon", "Sat"], times=["10:00"]),
     Course("Programming", "CSI101", days= ["Wed", "Fri"], times=["11:00"]),
     Course("Science", "SCI101", days= ["Tue", "Thur"], times=["10:00"]),
-    Course("Art", "ART101", days= ["Tue", "Fri"], times=["16:00"]),
+    Course("Art", "ART101", days= ["Wed", "Fri"], times=["16:00"]),
     Course("Gym", "PHY101", days= ["Mon", "Fri"], times=["11:00"]),
     Course("Art", "ART101", days= ["Tue", "Wed"], times=["11:00"]),
     Course("History", "HIS101", days= ["Mon", "Tue"], times=["16:00"])
@@ -139,6 +142,7 @@ def select_Course(course, course_list):
     # Clear previous selection in bottom frame
     for widget in bottomLeftFrame.winfo_children():
         widget.destroy()
+
     # Create a label for the selected course
     col = 0
     r = 0
@@ -153,8 +157,23 @@ def select_Course(course, course_list):
                 r = 0
                 col = col + 1
                 print("triggered")
-
-
+    if not AND(course_list, 0, 1): #check if math AND english are both selected passing their array index number
+        blfR1Label.config(bg = "red")
+    else:
+        blfR1Label.config(bg="green")
+    if not OR(course_list, 2, 3): #check if theyre in either one of science or programming
+        blfR2Label.config(bg = "red")
+    else:
+        blfR2Label.config(bg="green")
+    if not XOR(course_list, 4, 6): #check if they are in only one of the art sections
+        blfR3Label.config(bg = "red")
+    else:
+        blfR3Label.config(bg="green")
+    if not NOR(course_list): #check if theyre in none of teh wednesday or thursday classes
+        blfR4Label.config(bg = "red")
+    else:
+        blfR4Label.config(bg="green")
+  
     # label_text = (f"{course.getName()} ({course.getCourseId()})\n" f"Days: {', '.join(course.getDays())}\n" f"Times: {', '.join(course.getTimes())}")
     # label = tk.Label(bottomHorizontalFrame, text=label_text, borderwidth=1, relief="solid", justify="left", anchor="w", padx=5, pady=5)
     # label.pack(side="left", padx=5, pady=5, fill="x", expand=True)
@@ -186,14 +205,30 @@ def changeColor(course, course_list):
                         col = time_to_col[time]
 
                         currentColor = timeCells[(row, col)].cget("bg")
-                    if currentColor == "yellow":
-                        timeCells[(row, col)].configure(bg="red") 
-                        foundConflict = True #marks a conflict boolean
-                    else:
-                        timeCells[(row, col)].configure(bg="yellow")
+                        if currentColor == "yellow":
+                            timeCells[(row, col)].configure(bg="red") 
+                            foundConflict = True #marks a conflict boolean
+                            blfR5Label.config(bg = "red")
+                        else:
+                            timeCells[(row, col)].configure(bg="yellow")
+                            blfR5Label.config(bg = "green")
 
 
+#boolean gate functions
+def AND(course_list, c1, c2):
+    return (course_list[c1].getSelected() and course_list[c2].getSelected())
 
+def OR(course_list, c1, c2):
+    return (course_list[c1].getSelected() or course_list[c2].getSelected())
 
+def XOR(course_list, c1, c2):
+    return (course_list[c1].getSelected() ^ course_list[c2].getSelected())
 
+def NOR(course_list):
+    for c in course_list:
+        if c.getSelected():
+            for d in c.getDays():
+                if d == "Tue" or d == "Thur":
+                    return False
+    return True
 window.mainloop() #activates gui event loop
